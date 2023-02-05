@@ -52,6 +52,10 @@ nsrdb/17052: correct peaks: 64.758 %
 Average correct: 67.745 %
 ```
 
+### Závěr
+
+Tento postup pro detekci R peaků určitě není dokonalý a opravdu záleží na nastavení jeho parametrů (Ntý percentil, velikost okna). Pro ideální EKG signál může být dostačující, ale pokud se v signálu objevují poklesy nebo vychýlení, tak spolehlivost tohoto algoritmu klesá vzhledem k jeho povaze detekovat R peaky proti globálním hodnotám signálu.
+
 ## 2. Výpočet korelace EKG signálů
 
 
@@ -66,6 +70,10 @@ signály na stejný počátek, např. dle pozice prvního dominantního R peaku.
 jednotlivých signálů neshodují, je také nutné zvolit vhodnou délku korelační funkce, a to
 například analýzou autokorelačních funkcí samostatných signálů.
 
+### Postup řešení
+
+Signál se nejříve převede na dominantní frekvenci celého setu signálů DRIVEDB, poté se odsekne začátek až do prvního dominantního R peaku a následně se všechny signály srovnají se stejnou délku. Korelační koeficient je počítán pomocí funkce `np.corrcoef` a korelační funkce pomocí funkce `scipy.signal.correlate`.
+
 ### Výstup
 
 Kolerační matice EKG signálů DRIVEDV pro prvních 1000 hodnot:\
@@ -79,6 +87,9 @@ Korelační funkce pro signály s největší korelací:\
 Korelační funkce pro signály s nejmenší korelací:\
 ![Korelační funkce pro signály s nejmenší korelací](ecg_corr_func_least.png)
 
+### Závěr
+
+U této úlohy bylo nejsložitější srovnat signály podle prvního dominantního R peaku, který nebyl vždy správně u některých singálů detekován. Je zde také vidět, jak se liší korelační funkce pro dané signály podle jejich korelačního koeficientu.
 
 ## 3. Klasifikace EMG signálů
 
@@ -93,6 +104,10 @@ kde, t je doba záznamu, f(t) je EMG signál a | | symbolizuje absolutní hodnot
 detekujte oblasti, kde u jednotlivých signálů dochází k nárůstu a poklesu aktivity, a to pomocí
 okénkové varianty iEMG a derivace funkce. Velikost okénka zvolte tak, aby byly výsledky
 statisticky spolehlivé.
+
+### Postup řešení
+
+Nejdříve je signál převeden na absolutní hodnotu (rektifikace), poté buď se spočítá okénková integrace pomocí funkce `np.convolve` nebo integrovaný celý signál pomocí sumace.
 
 
 ### Výstup
@@ -116,3 +131,8 @@ drive12 iEMG: 247.943
 
 Detekce změn v EMG signálu pomocí okénkové varianty iEMG a derivace pro drive01 z DRIVEDB. V zeleném intervalu signál jednoznačně stoupá, v červeném jednoznačně klesá a v nevyznačeném není detekován jednoznačný pohyb.\
 ![Detekce změn v EMG signálu drive01](emg_change.png)
+
+
+### Závěr
+
+U celkového integrovaného EMG pro všechny jízdy je vidět, jak se celková aktivita během různých jízd odlišuje. Algoritmus pro detekci změn v okénkové variantě integrovaného EMG také závisí na nastevení jeho parametrů (velikost okna a prahová hodnota) a tak nemusí být pro všechny případy vhodný.
